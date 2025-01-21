@@ -1,0 +1,43 @@
+Options +FollowSymLinks -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /Projeto/admin/
+    
+    # Permite acesso aos recursos estáticos
+    RewriteRule ^(assets|ajax)/ - [L]
+    
+    # Permite acesso ao login
+    RewriteRule ^login\.php$ - [L]
+    
+    # Verifica se está logado para outras páginas
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !login\.php
+    RewriteCond %{HTTP_COOKIE} !PHPSESSID
+    RewriteRule ^ login.php [L,R=302]
+</IfModule>
+
+# Proteção contra acesso direto aos arquivos
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteção contra visualização de diretórios
+Options -Indexes
+
+# Força download de arquivos sensíveis
+<FilesMatch "\.(sql|log|htaccess|htpasswd|ini|phps|fla|psd|sh|bak|inc)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP configurações
+<IfModule mod_php.c>
+    php_value session.cookie_httponly 1
+    php_value session.use_only_cookies 1
+    php_value session.cookie_lifetime 0
+    php_value session.gc_maxlifetime 1440
+</IfModule> 
